@@ -1,5 +1,7 @@
 function addMoney(userId,value) {
   if(value > 0){
+    var token = PropertiesService.getScriptProperties().getProperty('SLACK_ACCESS_TOKEN');
+    
     //spreadsheetの読み込み
     var sheet_id = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
     var sheet = SpreadsheetApp.openById(sheet_id);
@@ -13,13 +15,15 @@ function addMoney(userId,value) {
     var Address = "B"+(indexNum+1);
     sheet.getRange(Address).setValue(money);
   
-    postMessage("@"+userId,"残高:"+money+"[+"+value+"]");
-    postMessage("#money_log","[入金]"+getNameById(userId)+"残高:"+money+"[+"+value+"]");
+    postMessage(token, "@"+userId,"残高:"+money+"[+"+value+"]");
+    postMessage(token, "#money_log","[入金]"+getNameById(userId)+"残高:"+money+"[+"+value+"]");
   }
 }
 
 function subMoney(userId,value) {
   if(value > 0){
+    var token = PropertiesService.getScriptProperties().getProperty('SLACK_ACCESS_TOKEN');
+    
     //spreadsheetの読み込み
     var sheet_id = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
     var sheet = SpreadsheetApp.openById(sheet_id);
@@ -33,11 +37,11 @@ function subMoney(userId,value) {
     var Address = "B"+(indexNum+1);
     sheet.getRange(Address).setValue(money);
   
-    postMessage("@"+userId,"残高:"+money+"[-"+value+"]");
+    postMessage(token, "@"+userId,"残高:"+money+"[-"+value+"]");
     if(money < 0){
-      postMessage("@"+userId,"残高がありません。チャージしてくださいね");
+      postMessage(token, "@"+userId,"残高がありません。チャージしてくださいね");
     }
-    postMessage("#money_log","[出金]"+getNameById(userId)+"残高:"+money+"[-"+value+"]");
+    postMessage(token, "#money_log","[出金]"+getNameById(userId)+"残高:"+money+"[-"+value+"]");
   }
 }
 
@@ -97,7 +101,6 @@ function arrayParse(array){
 }
 
 function postMessage(id,message){
-  var token = PropertiesService.getScriptProperties().getProperty('SLACK_ACCESS_TOKEN');
   var bot_name = "ウィーゴ";
   var bot_icon = "http://www.hasegawa-model.co.jp/hsite/wp-content/uploads/2016/04/cw12p5.jpg";
   var app = SlackApp.create(token);   
