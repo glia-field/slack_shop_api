@@ -1,6 +1,8 @@
 function addMoney(userId,value) {
-  if(value > 0){
+  
+  if(value > 0){  
     var token = PropertiesService.getScriptProperties().getProperty('SLACK_ACCESS_TOKEN');
+    var app = SlackApp.create(token);  
     
     //spreadsheetの読み込み
     var sheet_id = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
@@ -8,21 +10,22 @@ function addMoney(userId,value) {
     var lastrow = sheet.getLastRow();
     var member = sheet.getSheetValues(1, 1, lastrow, 1);  //データ行のみを取得する
     var money = sheet.getSheetValues(1, 2, lastrow, 1); //データ行のみを取得する
-  
+    
     var indexNum = arrayParse(member).indexOf(userId);
     money = parseInt(money[indexNum]) + value;
-  
+    
     var Address = "B"+(indexNum+1);
     sheet.getRange(Address).setValue(money);
-  
-    postMessage(token, "@"+userId,"残高:"+money+"[+"+value+"]");
-    postMessage(token, "#money_log","[入金]"+getNameById(userId)+"残高:"+money+"[+"+value+"]");
+    
+    postMessage(token,app, "@"+userId,"残高:"+money+"[+"+value+"]");
+    postMessage(token,app, "#money_log","[入金]"+getNameById(userId)+"残高:"+money+"[+"+value+"]");
   }
 }
 
 function subMoney(userId,value) {
   if(value > 0){
     var token = PropertiesService.getScriptProperties().getProperty('SLACK_ACCESS_TOKEN');
+    var app = SlackApp.create(token);  
     
     //spreadsheetの読み込み
     var sheet_id = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
@@ -37,11 +40,11 @@ function subMoney(userId,value) {
     var Address = "B"+(indexNum+1);
     sheet.getRange(Address).setValue(money);
   
-    postMessage(token, "@"+userId,"残高:"+money+"[-"+value+"]");
+    postMessage(token,app, "@"+userId,"残高:"+money+"[-"+value+"]");
     if(money < 0){
-      postMessage(token, "@"+userId,"残高がありません。チャージしてくださいね");
+      postMessage(token,app, "@"+userId,"残高がありません。チャージしてくださいね");
     }
-    postMessage(token, "#money_log","[出金]"+getNameById(userId)+"残高:"+money+"[-"+value+"]");
+    postMessage(token,app, "#money_log","[出金]"+getNameById(userId)+"残高:"+money+"[-"+value+"]");
   }
 }
 
@@ -100,10 +103,9 @@ function arrayParse(array){
   return parseArray;
 }
 
-function postMessage(id,message){
+function postMessage(token,app, id,message){
   var bot_name = "ウィーゴ";
-  var bot_icon = "http://www.hasegawa-model.co.jp/hsite/wp-content/uploads/2016/04/cw12p5.jpg";
-  var app = SlackApp.create(token);   
+  var bot_icon = "http://www.hasegawa-model.co.jp/hsite/wp-content/uploads/2016/04/cw12p5.jpg"; 
   
   return app.postMessage(id, message, {
     username: bot_name,
