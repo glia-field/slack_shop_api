@@ -1,5 +1,35 @@
+//Library
+//slackApp M3W5Ut3Q39AaIwLquryEPMwV62A3znfOO
+
+function transMoney(sendUserId, recvUserId, value){
+  if(value > 0){
+    var token = PropertiesService.getScriptProperties().getProperty('SLACK_ACCESS_TOKEN');
+    var app = SlackApp.create(token);  
+    
+    //spreadsheetの読み込み
+    var sheet_id = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
+    var SS = SpreadsheetApp.openById(sheet_id);
+    var sheet=SS.getSheetByName("シート1");
+    var lastrow = sheet.getDataRange().getLastRow();
+    var member = sheet.getSheetValues(1, 1, lastrow, 1);  //データ行のみを取得する
+    var memberName = sheet.getSheetValues(1, 3, lastrow, 1)
+    var money = sheet.getSheetValues(1, 2, lastrow, 1); //データ行のみを取得する
+    
+    var sendUserIndexNum = arrayParse(member).indexOf(sendUserId);
+    var recvUserIndexNum = arrayParse(member).indexOf(recvUserId);
+    var sendUserMoney = parseInt(money[sendUserIndexNum]) - value;
+    var recvUserMoney = parseInt(money[recvUserIndexNum]) + value;
+    
+    sheet.getRange(sendUserIndexNum+1,2).setValue(sendUserMoney);
+    sheet.getRange(recvUserIndexNum+1,2).setValue(recvUserMoney);
+    
+    postMessage(token,app, "@"+sendUserId,"残高:"+sendUserMoney+"[-"+value+"]");
+    postMessage(token,app, "@"+recvUserId,"残高:"+recvUserMoney+"[+"+value+"]");
+    postMessage(token,app, "#money_log","[送金] @"+memberName[sendUserIndexNum]+"-> @"+memberName[recvUserIndexNum]+"["+value+"円]");
+  }
+}
+
 function addMoney(userId,value) {
-  
   if(value > 0){  
     var token = PropertiesService.getScriptProperties().getProperty('SLACK_ACCESS_TOKEN');
     var app = SlackApp.create(token);  
