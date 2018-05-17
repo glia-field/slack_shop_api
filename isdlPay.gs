@@ -44,7 +44,7 @@ function addMoney(userId, value, slack_access_token, sheet_id) {
     sheet.getRange(Address).setValue(money);
     
     postMessage(slack_access_token, app, "@"+userId,"残高:"+money+"[+"+value+"]");
-    postMessage(slack_access_token, app, "#money_log","[入金]"+getNameById(userId)+"残高:"+money+"[+"+value+"]");
+    postMessage(slack_access_token, app, "#money_log","[入金]"+getNameById(userId, sheet_id)+"残高:"+money+"[+"+value+"]");
   }
 }
 
@@ -68,7 +68,7 @@ function subMoney(userId, value, slack_access_token, sheet_id) {
     if(money < 0){
       postMessage(slack_access_token, app, "@"+userId,"残高がマイナスです。本システムは融資ではありません。");
     }
-    postMessage(slack_access_token, app, "#money_log","[出金]"+getNameById(userId)+"残高:"+money+"[-"+value+"]");
+    postMessage(slack_access_token, app, "#money_log","[出金]"+getNameById(userId, sheet_id)+"残高:"+money+"[-"+value+"]");
   }
 }
 
