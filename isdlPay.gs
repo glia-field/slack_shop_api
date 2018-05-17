@@ -1,13 +1,11 @@
 //Library
 //slackApp M3W5Ut3Q39AaIwLquryEPMwV62A3znfOO
 
-function transMoney(sendUserId, recvUserId, value){
+function transMoney(sendUserId, recvUserId, value, slack_access_token, sheet_id){
   if(value > 0){
-    var token = PropertiesService.getScriptProperties().getProperty('SLACK_ACCESS_TOKEN');
-    var app = SlackApp.create(token);  
+    var app = SlackApp.create(slack_access_token);  
     
     //spreadsheetの読み込み
-    var sheet_id = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
     var SS = SpreadsheetApp.openById(sheet_id);
     var sheet=SS.getSheetByName("シート1");
     var lastrow = sheet.getDataRange().getLastRow();
@@ -29,13 +27,11 @@ function transMoney(sendUserId, recvUserId, value){
   }
 }
 
-function addMoney(userId,value) {
+function addMoney(userId, value, slack_access_token, sheet_id) {
   if(value > 0){  
-    var token = PropertiesService.getScriptProperties().getProperty('SLACK_ACCESS_TOKEN');
-    var app = SlackApp.create(token);  
+    var app = SlackApp.create(slack_access_token);  
     
     //spreadsheetの読み込み
-    var sheet_id = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
     var sheet = SpreadsheetApp.openById(sheet_id);
     var lastrow = sheet.getLastRow();
     var member = sheet.getSheetValues(1, 1, lastrow, 1);  //データ行のみを取得する
@@ -52,13 +48,11 @@ function addMoney(userId,value) {
   }
 }
 
-function subMoney(userId,value) {
+function subMoney(userId, value, slack_access_token, sheet_id) {
   if(value > 0){
-    var token = PropertiesService.getScriptProperties().getProperty('SLACK_ACCESS_TOKEN');
-    var app = SlackApp.create(token);  
+    var app = SlackApp.create(slack_access_token);  
     
     //spreadsheetの読み込み
-    var sheet_id = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
     var sheet = SpreadsheetApp.openById(sheet_id);
     var lastrow = sheet.getLastRow();
     var member = sheet.getSheetValues(1, 1, lastrow, 1);  //データ行のみを取得する
@@ -72,15 +66,14 @@ function subMoney(userId,value) {
   
     postMessage(token,app, "@"+userId,"残高:"+money+"[-"+value+"]");
     if(money < 0){
-      postMessage(token,app, "@"+userId,"残高がありません。チャージしてくださいね");
+      postMessage(token,app, "@"+userId,"残高がマイナスです。本システムは融資ではありません。");
     }
     postMessage(token,app, "#money_log","[出金]"+getNameById(userId)+"残高:"+money+"[-"+value+"]");
   }
 }
 
-function getMoney(userId) {
+function getMoney(userId, sheet_id) {
   //spreadsheetの読み込み
-  var sheet_id = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
   var sheet = SpreadsheetApp.openById(sheet_id);
   var lastrow = sheet.getLastRow();
   var member = sheet.getSheetValues(1, 1, lastrow, 1);  //データ行のみを取得する
@@ -91,8 +84,7 @@ function getMoney(userId) {
   return money[indexNum][0];
 }
 
-function getIdByName(userName){
-  var sheet_id = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
+function getIdByName(userName, sheet_id){
   var sheet = SpreadsheetApp.openById(sheet_id);
   var lastrow = sheet.getLastRow();
   var member = sheet.getSheetValues(1, 1, lastrow, 1);  //データ行のみを取得する
@@ -102,8 +94,7 @@ function getIdByName(userName){
   return member[indexNum][0];
 }
 
-function getNameById(userId){
-  var sheet_id = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
+function getNameById(userId, sheet_id){
   var sheet = SpreadsheetApp.openById(sheet_id);
   var lastrow = sheet.getLastRow();
   var member = sheet.getSheetValues(1, 1, lastrow, 1);  //データ行のみを取得する
@@ -113,8 +104,7 @@ function getNameById(userId){
   return member_name[indexNum][0];
 }
 
-function getIdByAtname(atname){
-  var sheet_id = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
+function getIdByAtname(atname, sheet_id){
   var sheet = SpreadsheetApp.openById(sheet_id);
   var lastrow = sheet.getLastRow();
   var member = sheet.getSheetValues(1, 1, lastrow, 1);  //データ行のみを取得する
@@ -122,6 +112,12 @@ function getIdByAtname(atname){
   
   var indexNum = arrayParse(member_atname).indexOf(atname);
   return member[indexNum][0];
+}
+
+//未実装
+function getMemberList(){ 
+}
+function getMonetList(){
 }
 
 function arrayParse(array){
@@ -133,7 +129,7 @@ function arrayParse(array){
   return parseArray;
 }
 
-function postMessage(token,app, id,message){
+function postMessage(token, app, id,message){
   var bot_name = "ウィーゴ";
   var bot_icon = "http://www.hasegawa-model.co.jp/hsite/wp-content/uploads/2016/04/cw12p5.jpg"; 
   
