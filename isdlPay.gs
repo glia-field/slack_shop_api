@@ -4,14 +4,14 @@
 function transMoney(sendUserId, recvUserId, value, slack_access_token, sheet_id){
   if(value > 0){
     var app = SlackApp.create(slack_access_token);  
-    
-    //spreadsheetの読み込み
-    var SS = SpreadsheetApp.openById(sheet_id);
-    var sheet=SS.getSheetByName("シート1");
-    var lastrow = sheet.getDataRange().getLastRow();
+   
+   　　// マスタデータシートを取得
+  　　 var sheet_id = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
+ 　　　　 var sheet = SpreadsheetApp.openById(sheet_id);
+ 　 　 var lastrow = sheet.getLastRow();
     var member = sheet.getSheetValues(1, 1, lastrow, 1);  //データ行のみを取得する
-    var memberName = sheet.getSheetValues(1, 3, lastrow, 1)
-    var money = sheet.getSheetValues(1, 2, lastrow, 1); //データ行のみを取得する
+　　　　　 　var memberName = sheet.getSheetValues(1, 3, lastrow, 1);  //データ行のみを取得する
+　　　　　 　var money = sheet.getSheetValues(1, 2, lastrow, 1); //データ行のみを取得する
     
     var sendUserIndexNum = arrayParse(member).indexOf(sendUserId);
     var recvUserIndexNum = arrayParse(member).indexOf(recvUserId);
@@ -114,10 +114,22 @@ function getIdByAtname(atname, sheet_id){
   return member[indexNum][0];
 }
 
-//未実装
-function getMemberList(){ 
+function getMemberList(sheet_id){
+  // マスタデータシートを取t得
+　　　var sheet = SpreadsheetApp.openById(sheet_id);
+  var lastrow = sheet.getLastRow();
+  var member = sheet.getSheetValues(1, 1, lastrow, 1);  //データ行のみを取得する
+  
+  return member;
 }
-function getMonetList(){
+
+function getMoneyList(sheet_id){
+  // マスタデータシートを取t得
+ 　　var sheet = SpreadsheetApp.openById(sheet_id);
+  var lastrow = sheet.getLastRow();
+  var money = sheet.getSheetValues(1, 2, lastrow, 1);  //データ行のみを取得する
+  
+  return money;
 }
 
 function arrayParse(array){
