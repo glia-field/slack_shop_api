@@ -21,9 +21,9 @@ function transMoney(sendUserId, recvUserId, value, slack_access_token, sheet_id)
     sheet.getRange(sendUserIndexNum+1,2).setValue(sendUserMoney);
     sheet.getRange(recvUserIndexNum+1,2).setValue(recvUserMoney);
     
-    postMessage(token,app, "@"+sendUserId,"残高:"+sendUserMoney+"[-"+value+"]");
-    postMessage(token,app, "@"+recvUserId,"残高:"+recvUserMoney+"[+"+value+"]");
-    postMessage(token,app, "#money_log","[送金] @"+memberName[sendUserIndexNum]+"-> @"+memberName[recvUserIndexNum]+"["+value+"円]");
+    postMessage(slack_access_token, app, "@"+sendUserId,"残高:"+sendUserMoney+"[-"+value+"]");
+    postMessage(slack_access_token, app, "@"+recvUserId,"残高:"+recvUserMoney+"[+"+value+"]");
+    postMessage(slack_access_token, app, "#money_log","[送金] @"+memberName[sendUserIndexNum]+"-> @"+memberName[recvUserIndexNum]+"["+value+"円]");
   }
 }
 
@@ -43,8 +43,8 @@ function addMoney(userId, value, slack_access_token, sheet_id) {
     var Address = "B"+(indexNum+1);
     sheet.getRange(Address).setValue(money);
     
-    postMessage(token,app, "@"+userId,"残高:"+money+"[+"+value+"]");
-    postMessage(token,app, "#money_log","[入金]"+getNameById(userId)+"残高:"+money+"[+"+value+"]");
+    postMessage(slack_access_token, app, "@"+userId,"残高:"+money+"[+"+value+"]");
+    postMessage(slack_access_token, app, "#money_log","[入金]"+getNameById(userId)+"残高:"+money+"[+"+value+"]");
   }
 }
 
@@ -64,11 +64,11 @@ function subMoney(userId, value, slack_access_token, sheet_id) {
     var Address = "B"+(indexNum+1);
     sheet.getRange(Address).setValue(money);
   
-    postMessage(token,app, "@"+userId,"残高:"+money+"[-"+value+"]");
+    postMessage(slack_access_token, app, "@"+userId,"残高:"+money+"[-"+value+"]");
     if(money < 0){
-      postMessage(token,app, "@"+userId,"残高がマイナスです。本システムは融資ではありません。");
+      postMessage(slack_access_token, app, "@"+userId,"残高がマイナスです。本システムは融資ではありません。");
     }
-    postMessage(token,app, "#money_log","[出金]"+getNameById(userId)+"残高:"+money+"[-"+value+"]");
+    postMessage(slack_access_token, app, "#money_log","[出金]"+getNameById(userId)+"残高:"+money+"[-"+value+"]");
   }
 }
 
