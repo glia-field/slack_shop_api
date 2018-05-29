@@ -3,7 +3,6 @@
 //Requirement Library
 //slackApp: M3W5Ut3Q39AaIwLquryEPMwV62A3znfOO
 function transMoney(sendUserId, recvUserId, value, slack_access_token, sheet_id) {
-  if (value > 0) {
     var app = SlackApp.create(slack_access_token);
     
     // マスタデータシートを取得
@@ -22,7 +21,6 @@ function transMoney(sendUserId, recvUserId, value, slack_access_token, sheet_id)
     postMessage(slack_access_token, app, "@" + sendUserId, "残高:" + sendUserMoney + "[-" + value + "]");
     postMessage(slack_access_token, app, "@" + recvUserId, "残高:" + recvUserMoney + "[+" + value + "]");
     postMessage(slack_access_token, app, "#money_log", "[送金] @" + memberName[sendUserIndexNum] + "-> @" + memberName[recvUserIndexNum] + "[" + value + "円]");
-  }
 }
 
 function addMoney(userId, value, slack_access_token, sheet_id) {
