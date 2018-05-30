@@ -24,45 +24,44 @@ function transMoney(sendUserId, recvUserId, value, slack_access_token, sheet_id)
 }
 
 function addMoney(userId, value, slack_access_token, sheet_id) {
-    var app = SlackApp.create(slack_access_token);
-  
+　　var app = SlackApp.create(slack_access_token);  
+    
     //spreadsheetの読み込み
     var sheet = SpreadsheetApp.openById(sheet_id);
     var lastrow = sheet.getLastRow();
-    var member = sheet.getSheetValues(1, 1, lastrow, 1); //データ行のみを取得する
-    
-    //残高の列を取得し、今回のユーザーが何行目かを探す
+    var member = sheet.getSheetValues(1, 1, lastrow, 1);  //データ行のみを取得する
     var money = sheet.getSheetValues(1, 2, lastrow, 1); //データ行のみを取得する
-    var indexNum = arrayParse(member).indexOf(userId);
-
-    //該当者の残高をint型数字に整形して、今回受け取った額を足し合わせ、スプレッドシートに記述
-    money = parseInt(money[indexNum]) + value;
-    sheet.getRange(indexNum + 1, 2).setValue(money);
     
-    //通知
-    postMessage(slack_access_token, app, "@" + userId, "残高:" + money + "[+" + value + "]");
-    postMessage(slack_access_token, app, "#money_log", "[入金]" + getNameById(userId, sheet_id) + "残高:" + money + "[+" + value + "]");
+    var indexNum = arrayParse(member).indexOf(userId);
+    money = parseInt(money[indexNum]) + value;
+    
+    var Address = "B"+(indexNum+1);
+    sheet.getRange(Address).setValue(money);
+    
+    postMessage(slack_access_token, app, "@"+userId,"残高:"+money+"[+"+value+"]");
+    postMessage(slack_access_token, app, "#money_log","[入金]"+getNameById(userId, sheet_id)+"残高:"+money+"[+"+value+"]");
 }
 
 function subMoney(userId, value, slack_access_token, sheet_id) {
-    var app = SlackApp.create(slack_access_token);
-  
+    var app = SlackApp.create(slack_access_token);  
+    
     //spreadsheetの読み込み
     var sheet = SpreadsheetApp.openById(sheet_id);
     var lastrow = sheet.getLastRow();
-    var member = sheet.getSheetValues(1, 1, lastrow, 1); //データ行のみを取得する
-    
-    //残高の列を取得し、今回のユーザーが何行目かを探す
+    var member = sheet.getSheetValues(1, 1, lastrow, 1);  //データ行のみを取得する
     var money = sheet.getSheetValues(1, 2, lastrow, 1); //データ行のみを取得する
+  
     var indexNum = arrayParse(member).indexOf(userId);
-
-    //該当者の残高をint型数字に整形して、今回受け取った額を足し合わせ、スプレッドシートに記述
     money = parseInt(money[indexNum]) - value;
-    sheet.getRange(indexNum + 1, 2).setValue(money);
-    
-    //通知
-    postMessage(slack_access_token, app, "@" + userId, "残高:" + money + "[-" + value + "]");
-    postMessage(slack_access_token, app, "#money_log", "[入金]" + getNameById(userId, sheet_id) + "残高:" + money + "[-" + value + "]");
+  
+    var Address = "B"+(indexNum+1);
+    sheet.getRange(Address).setValue(money);
+  
+    postMessage(slack_access_token, app, "@"+userId,"残高:"+money+"[-"+value+"]");
+    if(money < 0){
+      postMessage(slack_access_token, app, "@"+userId,"残高がマイナスです。本システムは融資ではありません。");
+    }
+    postMessage(slack_access_token, app, "#money_log","[出金]"+getNameById(userId, sheet_id)+"残高:"+money+"[-"+value+"]");
 }
 
 function getMoney(userId, sheet_id) {
@@ -104,17 +103,13 @@ function getIdByAtname(atname, sheet_id) {
 }
 
 function getMemberList(sheet_id) {
-  // マスタデータシートを取t得
-  　　　
-  var sheet = SpreadsheetApp.openById(sheet_id);
+　var sheet = SpreadsheetApp.openById(sheet_id);
   var lastrow = sheet.getLastRow();
   var member = sheet.getSheetValues(1, 1, lastrow, 1); //データ行のみを取得する
   return member;
 }
 
-function getMoneyList(sheet_id) {
-  // マスタデータシートを取t得
-  　　
+function getMoneyList(sheet_id) {　
   var sheet = SpreadsheetApp.openById(sheet_id);
   var lastrow = sheet.getLastRow();
   var money = sheet.getSheetValues(1, 2, lastrow, 1); //データ行のみを取得する
