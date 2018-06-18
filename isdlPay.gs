@@ -109,14 +109,18 @@ function getInfo(slack_access_token, userId, sheet_id){
     sheet.getRange("A"+(lastrow+1)).setValue(userId);
     sheet.getRange("B"+(lastrow+1)).setValue("0");
     
+    //SlackのWeb APIでユーザーIDから各種情報を取得
     var userInfo = app.usersInfo(userId);
+    var userRealName = userInfo.user.profile.real_name;
     var userName = userInfo.user.name;
-    sheet.getRange("C"+(lastrow+1)).setValue(userName);
+    
+    sheet.getRange("C"+(lastrow+1)).setValue(userRealName);
     sheet.getRange("D"+(lastrow+1)).setValue("@"+userName);
     
     //例: Excelのn行目に新規ユーザーを追加した場合、lastrowには(n-1)が入っており、新規ユーザーは配列的には(n-1)に追加されたことにななる。
     indexNum = lastrow;
     
+    //リストの再読込(これクソコード)
     sheet = SpreadsheetApp.openById(sheet_id);
     lastrow = sheet.getLastRow();
     userIdList = sheet.getSheetValues(1, 1, lastrow, 1);
@@ -124,6 +128,7 @@ function getInfo(slack_access_token, userId, sheet_id){
     userNameList = sheet.getSheetValues(1, 3, lastrow, 1);
   }
   
+  //JSONにして返す
   var info = {
     "userId": userId,
     "userName" : userNameList[indexNum],
