@@ -4,6 +4,13 @@
 //slackApp: M3W5Ut3Q39AaIwLquryEPMwV62A3znfOO
 
 function transMoney(recvId, sendId, value, slack_access_token, sheet_id) {
+  //出品者自身の商品を買った場合の例外処理
+  if(recvId != sendId){
+    postMessage(slack_access_token, "@"+recvId,"出品者自身の購入のため、処理は行いませんでした。["+value+"円]");
+    postMessage(slack_access_token, "#money_log","[送金]"+sendInfo.userName+"->"+recvInfo.userName+"["+value+"円]");
+    return;
+  }
+   
   //get user information in JSON.
   var sheet = SpreadsheetApp.openById(sheet_id);
   var recvInfo = getInfo(slack_access_token, recvId, sheet);
@@ -18,8 +25,8 @@ function transMoney(recvId, sendId, value, slack_access_token, sheet_id) {
   sheet.getRange(recvInfo.sheetMoneyAddress).setValue(parseInt(recvInfo.money) + value);
   sheet.getRange(sendInfo.sheetMoneyAddress).setValue(parseInt(sendInfo.money) - value);
   
-  postMessage(slack_access_token, "@"+recvId,"残高:"+(parseInt(recvInfo.money) + value)+"[+"+value+"]");
-  postMessage(slack_access_token, "@"+sendId,"残高:"+(parseInt(sendInfo.money) - value)+"[-"+value+"]");
+  postMessage(slack_access_token, "@"+recvId,"残高:"+(parseInt(recvInfo.money) + value)+"[+"+value+"円]");
+  postMessage(slack_access_token, "@"+sendId,"残高:"+(parseInt(sendInfo.money) - value)+"[-"+value+"円]");
   postMessage(slack_access_token, "#money_log","[送金]"+sendInfo.userName+"->"+recvInfo.userName+"["+value+"円]");
 }
 
